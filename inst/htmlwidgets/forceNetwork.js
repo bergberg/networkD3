@@ -354,24 +354,23 @@ HTMLWidgets.widget({
       
       node.exit().remove();
     
-          
       node = node.enter()
       .append("g").attr("class", "node")
       .style("fill", function(d) { return color(d.group); })
       .style("opacity", options.opacity)
       .on("mouseover", mouseover)
       .on("mouseout", mouseout)
-      .on("click", click).merge(node);
-      
-      node
-      .call(drag)
-      
-      .append("circle")
-      .attr("r", function(d){return nodeSize(d);})
+      .on("click", click).append("circle")
       .style("stroke", "#fff")
       .style("opacity", options.opacity)
       .style("stroke-width", "1.5px")
+      .attr("r", 0)
+      .call(function(node) { 
+          node.transition().duration(500).attr("r", function(d){return nodeSize(d);})})
+      .merge(node);
       
+      node
+      .call(drag)
       .append("svg:text")
       .attr("class", "nodetext")
       .attr("dx", 12)
@@ -379,8 +378,7 @@ HTMLWidgets.widget({
       .text(function(d) { return d.name })
       .style("font", options.fontSize + "px " + options.fontFamily)
       .style("opacity", options.opacityNoHover)
-      .style("pointer-events", "none")
-      ;
+      .style("pointer-events", "none");
       
       
       
@@ -397,7 +395,10 @@ HTMLWidgets.widget({
       .attr("class", "link")
       .style("stroke", function(d) { return d.colour ; })
       //.style("stroke", options.linkColour)
-      .style("opacity", options.opacity).merge(link);
+      .style("opacity", 0)
+      .call(function(link) { 
+          link.transition().duration(500).style("opacity", options.opacity)})
+      .merge(link);
       
      
       
