@@ -45,6 +45,8 @@ HTMLWidgets.widget({
     
     var all_links = links;
     var all_nodes = nodes;
+    
+    var nm = nodes.map(n=>n.name); //easier name comparison
 
     // create linkedByIndex to quickly search for node neighbors
     // adapted from: http://stackoverflow.com/a/8780277/4389763
@@ -72,6 +74,9 @@ HTMLWidgets.widget({
       .force("link", d3.forceLink(links).distance(options.linkDistance))
       .force("center", d3.forceCenter(width / 2, height / 2))
       .force("charge", d3.forceManyBody().strength(options.charge))
+      .force('collision', d3.forceCollide().radius(function(d) {
+        return 2*d.radius;
+        }))
       .on("tick", tick);
 
     force.alpha(1).restart();
@@ -79,7 +84,7 @@ HTMLWidgets.widget({
     var drag = d3.drag()
         .on("start", dragstart)
         .on("drag", dragged)
-        .on("end", dragended)
+        .on("end", dragended);
       function dragstart(d) {
         if (!d3.event.active) force.alphaTarget(0.3).restart();
         d.fx = d.x;
@@ -332,7 +337,16 @@ HTMLWidgets.widget({
             .style("fill-opacity",1);
             
             all_nodes.forEach(function(n){if(n.group == d){nodes.push(n)}});
-            all_links.forEach(function(l){if(l.source.group == d || l.target.group == d){links.push(l)}});
+            
+            nm = nodes.map(n => n.name);
+            
+            all_links.forEach(
+                function(l){
+                    if(nm.includes(l.source.name) && nm.includes(l.target.name)){
+                        links.push(l);
+                    }
+                }
+            );
             
           legendEnabled.push(d);
       }
@@ -352,7 +366,9 @@ HTMLWidgets.widget({
       });
       
       
-      node.exit().remove();
+      node.exit()
+      .call(function(node){
+          node.transition().duration(250).style("opacity", 0).attr("r",0).remove()});
     
       node = node.enter()
       .append("g").attr("class", "node")
@@ -389,13 +405,15 @@ HTMLWidgets.widget({
           return l.source.name + "-" + l.target.name;
       });
       
-      link.exit().remove();
+      link.exit()
+      .call(function(link){
+          link.transition().duration(200).style("opacity", 0).remove()});
        
       link = link.enter().append("line")
       .attr("class", "link")
       .style("stroke", function(d) { return d.colour ; })
       //.style("stroke", options.linkColour)
-      .style("opacity", 0)
+      .style("opacity", 1e-6)
       .call(function(link) { 
           link.transition().duration(500).style("opacity", options.opacity)})
       .merge(link);
