@@ -46,7 +46,8 @@ HTMLWidgets.widget({
     var all_links = links;
     var all_nodes = nodes;
     
-    var nm = nodes.map(n=>n.name); //easier name comparison
+    var nm = [];
+    nodes.forEach(function(n){nm.push(n.name)});
 
     // create linkedByIndex to quickly search for node neighbors
     // adapted from: http://stackoverflow.com/a/8780277/4389763
