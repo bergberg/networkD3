@@ -338,7 +338,11 @@ HTMLWidgets.widget({
             
             all_nodes.forEach(function(n){if(n.group == d){nodes.push(n)}});
             
-            nm = nodes.map(n => n.name);
+            
+            nm = [];
+            nodes.forEach(function(n){nm.push(n.name)})
+            
+            //nm = nodes.map(n => n.name);
             
             all_links.forEach(
                 function(l){
