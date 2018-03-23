@@ -321,7 +321,7 @@ HTMLWidgets.widget({
     d3.select(el).selectAll('text').style('font-family', options.fontFamily);
     
     function clickLegend(d){
-      if(legendEnabled.includes(d.replace(/\s/g, ''))){
+      if(legendEnabled.indexOf(d.replace(/\s/g, '')) > -1){
         d3.select(this)           
           .style("fill-opacity", 0.15);
 
@@ -341,13 +341,13 @@ HTMLWidgets.widget({
             
             
             nm = [];
-            nodes.forEach(function(n){nm.push(n.name)})
+            nodes.forEach(function(n){nm.push(n.name)});
             
             //nm = nodes.map(n => n.name);
             
             all_links.forEach(
                 function(l){
-                    if(nm.includes(l.source.name) && nm.includes(l.target.name)){
+                    if(nm.indexOf(l.source.name) > -1 && nm.indexOf(l.target.name) > -1){
                         links.push(l);
                     }
                 }
